@@ -17,6 +17,7 @@
 		pkgs.gfortran
 		pkgs.octaveFull
 		pkgs.scilab-bin
-		pkgs.github-desktop		
+		pkgs.github-desktop
+		pkgs.ntfs3g
 	];
 }

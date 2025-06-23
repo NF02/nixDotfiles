@@ -14,4 +14,5 @@
 		pkgs.scribus
 		pkgs.svg2tikz
 	];
+  services.printing.drivers = [ pkgs.epson-escpr2 ];
 }
