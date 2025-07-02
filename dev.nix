@@ -19,5 +19,6 @@
 		pkgs.scilab-bin
 		pkgs.github-desktop
 		pkgs.ntfs3g
+    jre8
 	];
 }

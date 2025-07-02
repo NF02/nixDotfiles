@@ -3,7 +3,7 @@
 
 {
 	environment.systemPackages = with pkgs; [
-		pkgs.libreoffice-qt
+		libreoffice-still
 		pkgs.texliveFull
 		pkgs.texstudio
 		pkgs.gimp3
@@ -13,6 +13,8 @@
 		pkgs.inkscape
 		pkgs.scribus
 		pkgs.svg2tikz
+    xournalpp
+    
 	];
   services.printing.drivers = [ pkgs.epson-escpr2 ];
 }
