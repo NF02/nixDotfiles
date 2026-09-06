@@ -6,8 +6,8 @@
   home.stateVersion = "26.05";
 
   # Informazioni di base sull'utente
-  home.username = "nick";
-  home.homeDirectory = "/home/nick";
+  home.username = "user";
+  home.homeDirectory = "/home/user/";
 
   
   # Pacchetti da installare unicamente per l'utente corrente
@@ -56,8 +56,8 @@
     enable = true;
     settings = {
       user = {
-        name = "Nicola Ferru";
-        email = "ask.nfvblog@outlook.it";
+        name = "nome utente";
+        email = "tuonome@tuamail.it";
       };
     };
   };
