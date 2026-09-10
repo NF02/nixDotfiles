@@ -5,7 +5,22 @@
   # Emacs: editor, pacchetti e server
   # Specchia la struttura di ~/.emacs.d/
   # ------------------------------------------------------------------
+  home.packages = with pkgs; [
+    processing
+    hunspell                 # Necessario per ispell / flyspell
+    hunspellDicts.it-it      # Dizionario italiano per hunspell (consigliato)
+    clang-tools              # Include clangd per Eglot (C/C++)
+    texlab                   # Server LSP per LaTeX
+    phpactor                 # Server LSP per PHP
+    lilypond                 # Compilatore per spartiti musicali
+    pandoc                   # Per l'export avanzato in org-mode
+    libarchive               # Richiesto da nov.el per la gestione degli EPUB
 
+    # Font configurato in gui.el
+    nerd-fonts.open-dyslexic
+    emacs-all-the-icons-fonts  # Font per all-the-icons/company-box/org-roam-ui (visibili grazie a fonts.fontconfig)
+  ];
+  
   programs.emacs = {
     enable = true;
     package = pkgs.emacs-pgtk;

@@ -14,7 +14,7 @@
 
       fonts = {
         names = [ "OpenDyslexic Nerd Font" ];
-        size = 10.0;
+        size = 8.0;
       };
 
       # --- INPUT: TOUCHPAD & KEYBOARD LAYOUT (keybord-layout.conf) ---
@@ -124,8 +124,8 @@
           position = "top";
           mode = "dock";
           fonts = {
-            names = [ "OpenDyslexic Nerd Font" ];
-            size = 10.0;
+            names = [ "OpenDyslexic Nerd Font" "Font Awesome 7 Free Solid" "Font Awesome 7 Free" "Font Awesome 7 Brands" ];
+            size = 8.0;
           };
           statusCommand = "i3status-rs config-default.toml";
           colors = {
@@ -160,60 +160,7 @@
             };
           };
         }
-        # Barra tablet (i3blocks) - inizialmente invisibile in modalità laptop
-        {
-          id = "bar_tablet";
-          position = "top";
-          mode = "invisible";
-          fonts = {
-            names = [ "OpenDyslexic Nerd Font" ];
-            size = 10.0;
-          };
-          statusCommand = "i3status-rs config-default.toml";
-          extraConfig = ''
-            height 45
-            workspace_min_width 60
-          '';
-          colors = {
-            background = "#5D0c5a85";
-            statusline = "#FFFFFF";
-            separator = "#666666";
-
-            focusedWorkspace = {
-              border = "#C38CE7";
-              background = "#5D0C5A";
-              text = "#FFFFFF";
-            };
-            activeWorkspace = {
-              border = "#333333";
-              background = "#222222";
-              text = "#FFFFFF";
-            };
-            inactiveWorkspace = {
-              border = "#333333";
-              background = "#222222";
-              text = "#888888";
-            };
-            urgentWorkspace = {
-              border = "#2F343A";
-              background = "#900000";
-              text = "#FFFFFF";
-            };
-            bindingMode = {
-              border = "#2F343A";
-              background = "#900000";
-              text = "#FFFFFF";
-            };
-          };
-        }
       ];
-      
-      # --- GESTURES (gestures.conf): not natively supported, added via extraConfig ---
-      
-      bindswitches = {
-        "tablet:on" = { action = "exec toggle-tablet-mode"; };
-        "tablet:off" = { action = "exec toggle-tablet-mode"; };
-      };
 
       # --- KEYBINDINGS & MEDIA KEYS (keybind.conf, media.conf, clipboard.conf, gaps.conf, colors.conf) ---
       # NOTA: attributo semplice (non mkOptionDefault) per sostituire i default del
@@ -312,7 +259,7 @@
         "${mod}+Shift+g" = "exec swaymsg smart_gaps on, gaps inner current set 5, gaps outer current set 5";
 
         # General Shortcuts (keybind.conf)
-        "${mod}+Print" = "exec wlsyshot";
+        "${mod}+Print" = "exec snipping";
         "${mod}+n" = "exec swaync-client -t";
         "${mod}+m" = "exec device-menu";
         "${mod}+u" = "exec emojimenu";
@@ -339,6 +286,7 @@
       startup = [
         { command = "swaync"; }
         { command = "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway"; always = true; }
+        { command = "${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent"; always = true; }
         { command = "waypaper --restore"; always = true; }
         { command = "wl-paste --type text --watch cliphist store"; }
         { command = "wl-paste --type image --watch cliphist store"; }

@@ -7,24 +7,25 @@
    	libreoffice
    	git
    	gh
-   	cargo
-   	sbcl
-   	gnucobol
+    kdePackages.okular
    	nushell
-   	evolution
    	calibre
-   	evince
     obs-studio
-    pitivi
+    shotcut
     texliveFull
     maxima
-    texstudio
-    gnumake
+    telegram-desktop
+    discord
     scilab-bin
     openscad
     fastfetch
-    file-roller
+    kdePackages.ark
     opencode
+    gimp
+    inkscape
+    darktable
+    epson-escpr
+    krita
     home-manager
   ];
 }

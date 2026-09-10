@@ -21,12 +21,6 @@ programs.i3status-rust = {
           format = " $icon  $ssid ($signal_strength) ";
         }
         {
-          block = "battery";
-          interval = 10;
-          device = "BAT0";
-          format = " $icon $percentage $time ";
-        }
-        {
           block = "sound";
           
         }
