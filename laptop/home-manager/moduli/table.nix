@@ -66,4 +66,12 @@ in
   wayland.windowManager.sway.config.keybindings = {
     "${config.wayland.windowManager.sway.config.modifier}+Shift+t" = "exec toggle-tablet-mode";
   };
+
+  # Bindswitch per il toggle automatico del tablet (2-in-1)
+  wayland.windowManager.sway.config.bindswitches."tablet:on" = {
+    action = "exec toggle-tablet-mode";
+  };
+  wayland.windowManager.sway.config.bindswitches."tablet:off" = {
+    action = "exec toggle-tablet-mode";
+  };
 }

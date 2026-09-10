@@ -11,6 +11,7 @@
         dpi-aware = "yes";
         initial-window-size-pixels = "1200x720";
         term = "xterm-256color";
+        include = "~/.config/foot/themes/current.ini";
       };
 
       scrollback = {
@@ -90,7 +91,20 @@
     bright7=bcc0cc
   '';
 
-  # Symlink current.ini -> dark.ini (default theme, updated by darkman)
-  xdg.configFile."foot/themes/current.ini".source = 
-    config.xdg.configFile."foot/themes/dark.ini".source;
+  # Materialize current.ini so darkman can switch it at runtime.
+  # Replaces the nix-managed symlink with a real one pointing to dark.ini by default.
+  home.activation.materializeFootTheme = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    themes_dir="$HOME/.config/foot/themes"
+    mkdir -p "$themes_dir"
+    current="$themes_dir/current.ini"
+    dark="$themes_dir/dark.ini"
+    if [ -L "$current" ]; then
+      rm -f "$current"
+      ln -s "$dark" "$current"
+      echo "materialized $current -> dark.ini"
+    elif [ ! -e "$current" ]; then
+      ln -s "$dark" "$current"
+      echo "created $current -> dark.ini"
+    fi
+  '';
 }

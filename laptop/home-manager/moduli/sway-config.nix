@@ -9,7 +9,7 @@
     config = {
       # --- VARIABLES & MODIFIER ---
       modifier = "Mod4"; # Assumiamo Mod4 ($mod) come Super/Logo
-      terminal = "foot";
+      terminal = "ghostty";
       menu = "rofi -show drun";
 
       fonts = {
@@ -160,7 +160,53 @@
             };
           };
         }
+        {
+          id = "bar_tablet";
+          position = "top";
+          mode = "invisible";
+          extraConfig = ''
+            height 45
+            workspace_min_width 60
+          '';
+          fonts = {
+            names = [ "OpenDyslexic Nerd Font" "Font Awesome 7 Free Solid" "Font Awesome 7 Free" "Font Awesome 7 Brands" ];
+            size = 8.0;
+          };
+          statusCommand = "i3status-rs config-default.toml";
+          colors = {
+            background = "#5D0C5A";
+            statusline = "#FFFFFF";
+            separator = "#666666";
+
+            focusedWorkspace = {
+              border = "#C38CE7";
+              background = "#5D0C5A";
+              text = "#FFFFFF";
+            };
+            activeWorkspace = {
+              border = "#333333";
+              background = "#222222";
+              text = "#FFFFFF";
+            };
+            inactiveWorkspace = {
+              border = "#333333";
+              background = "#222222";
+              text = "#888888";
+            };
+            urgentWorkspace = {
+              border = "#2F343A";
+              background = "#900000";
+              text = "#FFFFFF";
+            };
+            bindingMode = {
+              border = "#2F343A";
+              background = "#900000";
+              text = "#FFFFFF";
+            };
+          };
+        }
       ];
+      
 
       # --- KEYBINDINGS & MEDIA KEYS (keybind.conf, media.conf, clipboard.conf, gaps.conf, colors.conf) ---
       # NOTA: attributo semplice (non mkOptionDefault) per sostituire i default del
