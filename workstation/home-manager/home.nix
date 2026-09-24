@@ -15,7 +15,9 @@
     ./moduli/devicemenu.nix
     ./moduli/snipping.nix
     ./moduli/mpd.nix
-    ./moduli/foot.nix
+    ./moduli/mime.nix
+    ./moduli/agent.nix
+    ./moduli/ghostty.nix
   ];
 
   programs.devicemenu.enable = true;
