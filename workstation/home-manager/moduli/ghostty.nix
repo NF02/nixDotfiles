@@ -1,6 +1,9 @@
 { config, pkgs, lib, ... }:
 
 {
+  home.sessionVariables = {
+    TERMINAL = "ghostty";
+  };
   # Ghostty terminal emulator
   programs.ghostty = {
     enable = true;

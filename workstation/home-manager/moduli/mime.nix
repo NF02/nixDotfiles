@@ -25,7 +25,7 @@
       
       # Testo e Documenti
       "text/plain" = [ "emacsclient.desktop" ];
-      "application/pdf" = [ "kde.okular.desktop" ];
+      "application/pdf" = [ "org.kde.okular.desktop" ];
 
       # Immagini
       "image/jpeg" = [ "swayimg.desktop" ];
@@ -34,6 +34,9 @@
       # Directory (fondamentale per fare aprire le cartelle a PCManFM)
       "inode/directory" = [ "pcmanfm.desktop" ];
 
+      # Terminale
+      "x-scheme-handler/terminal" = [ "com.mitchellh.ghostty.desktop" ];
+      
       # Web e Media
       "text/html" = [ "firefox.desktop" ];
       "x-scheme-handler/http" = [ "firefox.desktop" ];
