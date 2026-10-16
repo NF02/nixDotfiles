@@ -39,6 +39,7 @@ let
     org-fragtog
     org-roam
     org-roam-ui
+    org-re-reveal
     org-super-agenda
     visual-fill-column
     org-tree-slide

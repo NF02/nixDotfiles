@@ -8,18 +8,17 @@
     ./moduli/nushell.nix
     ./moduli/git.nix
     ./moduli/sbcl.nix
-    ./moduli/i3bar.nix
-    ./moduli/startw.nix
     ./moduli/emacs-config.nix
-    ./moduli/sway-config.nix
     ./moduli/devicemenu.nix
     ./moduli/snipping.nix
     ./moduli/mpd.nix
     ./moduli/mime.nix
-    ./moduli/agent.nix
     ./moduli/ghostty.nix
+    ./moduli/hyprland.nix
+    ./moduli/hyprlock.nix
+    ./moduli/hypridle.nix
+    ./moduli/waybar.nix
   ];
-
   programs.devicemenu.enable = true;
   programs.snipping.enable = true;
 }

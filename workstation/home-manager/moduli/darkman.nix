@@ -25,7 +25,7 @@
       BusName = "nl.whynothugo.darkman";
       ExecStart = "${pkgs.darkman}/bin/darkman run";
       # gsettings, bash e gli schemi GSettings usati dagli script di tema
-      Environment = "PATH=${pkgs.glib}/bin:${pkgs.bash}/bin:${pkgs.coreutils}/bin:${pkgs.gnused}/bin:${pkgs.gnugrep}/bin:/usr/bin:/bin GSETTINGS_SCHEMA_DIR=${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}/glib-2.0/schemas:${pkgs.glib}/share/glib-2.0/schemas";
+      Environment = "PATH=${pkgs.glib}/bin:${pkgs.bash}/bin:${pkgs.coreutils}/bin:${pkgs.gnused}/bin:${pkgs.gnugrep}/bin:${pkgs.systemd}/bin:/usr/bin:/bin GSETTINGS_SCHEMA_DIR=${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}/glib-2.0/schemas:${pkgs.glib}/share/glib-2.0/schemas XDG_DATA_DIRS=${pkgs.gsettings-desktop-schemas}/share:${pkgs.dconf}/share:/run/current-system/sw/share:${pkgs.glib}/share";
       Restart = "on-failure";
     };
     Install.WantedBy = [ "default.target" ];
@@ -57,16 +57,37 @@ EOF
     done
   '';
 
-  # Script di cambio tema lanciato da darkman (arg: dark|light).
-  # darkman cerca gli script eseguibili in $XDG_DATA_HOME/darkman (default ~/.local/share/darkman).
-  # Aggiorna color-scheme/gtk-theme via gsettings e gtk-application-prefer-dark-theme
-  # negli settings.ini di GTK3/GTK4 (usato dalle app GTK in Wayland)
-  xdg.dataFile."darkman/theme.sh" = {
-    executable = true;
-    text = ''
+      # Script di cambio tema lanciato da darkman (arg: dark|light).
+      # darkman cerca gli script eseguibili in $XDG_DATA_HOME/darkman (default ~/.local/share/darkman).
+      # Aggiorna color-scheme/gtk-theme via gsettings e gtk-application-prefer-dark-theme
+      # negli settings.ini di GTK3/GTK4 (usato dalle app GTK in Wayland) e sincronizza la palette Wayle.
+      xdg.dataFile."darkman/theme.sh" = {
+        executable = true;
+        text = ''
       #!/${pkgs.bash}/bin/bash
 
+      update_waybar() {
+        local pref="$1"
+        if [ "$pref" = "1" ]; then
+          if [ -f "$HOME/.config/waybar/style-dark.css" ]; then
+            rm -f "$HOME/.config/waybar/style.css"
+            cp "$HOME/.config/waybar/style-dark.css" "$HOME/.config/waybar/style.css"
+          fi
+        else
+          if [ ! -f "$HOME/.config/waybar/style-dark.css" ]; then
+            cp "$HOME/.config/waybar/style.css" "$HOME/.config/waybar/style-dark.css"
+          fi
+          if [ -f "$HOME/.config/waybar/style-light.css" ]; then
+            rm -f "$HOME/.config/waybar/style.css"
+            cp "$HOME/.config/waybar/style-light.css" "$HOME/.config/waybar/style.css"
+          fi
+        fi
+        chmod 644 "$HOME/.config/waybar/style.css" 2>/dev/null || true
+        ${pkgs.systemd}/bin/systemctl --user restart waybar.service 2>/dev/null || pkill -SIGUSR2 waybar 2>/dev/null || true
+      }
+
       # Aggiorna o aggiunge gtk-application-prefer-dark-theme in settings.ini
+
       update_prefer_dark() {
         local pref="$1"
         local ini="$2"
@@ -84,18 +105,39 @@ EOF
 
       case "''$1" in
         dark)
-          gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
-          gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
+          ${pkgs.dbus}/bin/dbus-run-session --dbus-daemon=${pkgs.dbus}/bin/dbus-daemon ${pkgs.coreutils}/bin/env GSETTINGS_SCHEMA_DIR=${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}/glib-2.0/schemas:${pkgs.glib}/share/glib-2.0/schemas XDG_DATA_DIRS=${pkgs.gsettings-desktop-schemas}/share:${pkgs.dconf}/share:/run/current-system/sw/share:${pkgs.glib}/share ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
+          ${pkgs.dbus}/bin/dbus-run-session --dbus-daemon=${pkgs.dbus}/bin/dbus-daemon ${pkgs.coreutils}/bin/env GSETTINGS_SCHEMA_DIR=${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}/glib-2.0/schemas:${pkgs.glib}/share/glib-2.0/schemas XDG_DATA_DIRS=${pkgs.gsettings-desktop-schemas}/share:${pkgs.dconf}/share:/run/current-system/sw/share:${pkgs.glib}/share ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
           update_prefer_dark 1 "$HOME/.config/gtk-3.0/settings.ini"
           update_prefer_dark 1 "$HOME/.config/gtk-4.0/settings.ini"
+          update_waybar 1
           ;;
         light)
-          gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
-          gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"
+          ${pkgs.dbus}/bin/dbus-run-session --dbus-daemon=${pkgs.dbus}/bin/dbus-daemon ${pkgs.coreutils}/bin/env GSETTINGS_SCHEMA_DIR=${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}/glib-2.0/schemas:${pkgs.glib}/share/glib-2.0/schemas XDG_DATA_DIRS=${pkgs.gsettings-desktop-schemas}/share:${pkgs.dconf}/share:/run/current-system/sw/share:${pkgs.glib}/share ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
+          ${pkgs.dbus}/bin/dbus-run-session --dbus-daemon=${pkgs.dbus}/bin/dbus-daemon ${pkgs.coreutils}/bin/env GSETTINGS_SCHEMA_DIR=${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}/glib-2.0/schemas:${pkgs.glib}/share/glib-2.0/schemas XDG_DATA_DIRS=${pkgs.gsettings-desktop-schemas}/share:${pkgs.dconf}/share:/run/current-system/sw/share:${pkgs.glib}/share ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"
           update_prefer_dark 0 "$HOME/.config/gtk-3.0/settings.ini"
           update_prefer_dark 0 "$HOME/.config/gtk-4.0/settings.ini"
+          update_waybar 0
           ;;
-      esac
-    '';
+      esac    '';
   };
+
+# darkman espone il portale Settings per color-scheme (usato da Firefox/apps).
+xdg.dataFile."xdg-desktop-portal/portals/darkman.portal" = {
+  force = true;
+  text = ''
+    [portal]
+    DBusName=org.freedesktop.impl.portal.desktop.darkman
+    Interfaces=org.freedesktop.impl.portal.Settings
+    UseIn=hyprland;sway
+  '';
+};
+
+xdg.configFile."xdg-desktop-portal/portals.conf" = {
+  force = true;
+  text = ''
+    [preferred]
+    default=hyprland;gtk
+    org.freedesktop.impl.portal.Settings=darkman
+  '';
+};
 }

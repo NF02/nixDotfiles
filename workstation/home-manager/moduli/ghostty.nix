@@ -12,8 +12,9 @@
       font-family = "OpenDyslexicM Nerd Font Mono";
       font-size = 10;
       font-feature = "-liga";
+      background-opacity = 0.9;
+      background-blur = true;
     };
-
     themes = {
       dark = {
         background = "5d0c5a";

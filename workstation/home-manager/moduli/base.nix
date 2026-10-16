@@ -65,6 +65,7 @@
     musescore
     audacity
     lmms-full
+    flowblade
     R
     (pkgs.rWrapper.override {
       packages = with rPackages; [
@@ -72,6 +73,7 @@
         ggplot2
         dplyr
         languageserver
+        svglite
       ];
     })
   ];
