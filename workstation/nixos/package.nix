@@ -16,11 +16,11 @@
     maxima
     telegram-desktop
     discord
-    scilab-bin
+    julia
     openscad
     fastfetch
     kdePackages.ark
-    opencode
+    ghostty
     gimp
     inkscape
     darktable
@@ -28,4 +28,5 @@
     krita
     home-manager
   ];
+  
 }

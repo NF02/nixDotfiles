@@ -58,6 +58,7 @@
     font-awesome
     corefonts
     typst
+    hieroglyphic
     gcc
     # musica
     guitarix

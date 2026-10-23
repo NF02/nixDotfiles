@@ -18,8 +18,8 @@
         }
         {
           timeout = 600;
-          on-timeout = "hyprctl eval 'hl.dsp.dpms(\"off\")'";
-          on-resume = "hyprctl eval 'hl.dsp.dpms(\"on\")'";
+          on-timeout = "hyprctl dispatch 'hl.dsp.dpms(\"off\")'";
+          on-resume = "hyprctl dispatch 'hl.dsp.dpms(\"on\")'";
         }
       ];
     };

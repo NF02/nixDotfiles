@@ -2,9 +2,8 @@
 
 {
   # hyprpolkitagent: agent di autenticazione polkit (sostituisce gnome_polkit,
-  # che non funzionava). Funziona anche su altri compositor Wayland (sway).
-  # Viene avviato dentro la sessione sway (vedi sway-config.nix) perché qui
-  # WAYLAND_DISPLAY non è esposto al systemd user manager (sway parte via
-  # dbus-run-session da startw).
+  # che non funzionava).
+  # Viene avviato dalla sessione Hyprland tramite services.hyprpolkitagent
+  # (vedi hyprland.nix), che espone WAYLAND_DISPLAY al servizio systemd user.
   home.packages = [ pkgs.hyprpolkitagent ];
 }

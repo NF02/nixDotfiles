@@ -11,6 +11,7 @@
     ./moduli/emacs-config.nix
     ./moduli/devicemenu.nix
     ./moduli/snipping.nix
+    ./moduli/wallpaperpicker.nix
     ./moduli/mpd.nix
     ./moduli/mime.nix
     ./moduli/ghostty.nix
@@ -21,4 +22,5 @@
   ];
   programs.devicemenu.enable = true;
   programs.snipping.enable = true;
+  programs.wallpaperpicker.enable = true;
 }

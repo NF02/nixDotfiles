@@ -18,7 +18,25 @@ let
 in
 {
   
-  services.awww.enable = true;
+  # Wallpaper: hyprpaper (il cambio automatico light/dark e' gestito da darkman,
+  # vedi darkman.nix).
+  services.hyprpaper = {
+    enable = true;
+    settings = {
+      splash = true;
+      ipc = "on";
+      wallpaper = [
+        {
+          monitor = "HDMI-A-2";
+          path = "/home/nick/.cache/bg";
+        }
+        {
+          monitor = "DP-1";
+          path = "/home/nick/.cache/bg";
+        }
+      ];
+    };
+  };
 
   # Materializza ~/.config/waybar/style.css come file reale (non symlink) per
   # permettere a darkman di cambiarlo a runtime (copia style-dark/light).
@@ -42,17 +60,6 @@ in
   services.hyprpolkitagent.enable = true;  services.hyprsunset.enable = true;
   programs.hyprshot.enable = true;
 
-  xdg.configFile."waypaper/config.ini" = {
-    force = true;
-    text = ''
-      [Settings]
-      backend = awww
-      fill = fill
-      folder = /home/nick/Immagini/ambabstract
-      monitors = All
-      sort = name
-    '';
-  };
   home.packages = with pkgs; [
     hyprlauncher
     playerctl
@@ -221,6 +228,43 @@ in
           _args = [
             (lib.generators.mkLuaInline ''mod .. " + SHIFT + T"'')
             (lib.generators.mkLuaInline ''hl.dsp.exec_cmd("darkman toggle")'')
+          ];
+        }
+        # Scegli wallpaper con yazi: monitor + tema (dark/light), salvato per tema
+        {
+          _args = [
+            (lib.generators.mkLuaInline ''mod .. " + ALT + W"'')
+            (lib.generators.mkLuaInline ''hl.dsp.exec_cmd("ghostty -e wallpaper-picker")'')
+          ];
+        }
+
+        # --- Secret workspace (special:secret) ---
+        {
+          _args = [
+            (lib.generators.mkLuaInline ''mod .. " + S"'')
+            (lib.generators.mkLuaInline ''hl.dsp.workspace.toggle_special("secret")'')
+          ];
+        }
+        {
+          _args = [
+            (lib.generators.mkLuaInline ''mod .. " + CTRL + S"'')
+            (lib.generators.mkLuaInline ''hl.dsp.window.move({ workspace = "special:secret", follow = false })'')
+          ];
+        }
+
+        # Snipping tool: menu con hyprlauncher + catture con hyprshot
+        {
+          _args = [
+            (lib.generators.mkLuaInline ''mod .. " + SHIFT + S"'')
+            (lib.generators.mkLuaInline ''hl.dsp.exec_cmd("snipping")'')
+          ];
+        }
+
+        # Pseudo-tile: di default su mod+P (Hyprland), ma mod+P e' gia' hyprlauncher
+        {
+          _args = [
+            (lib.generators.mkLuaInline ''mod .. " + ALT + P"'')
+            (lib.generators.mkLuaInline ''hl.dsp.window.pseudo()'')
           ];
         }
         
@@ -418,7 +462,6 @@ in
           (lib.generators.mkLuaInline ''
             function()
               hl.exec_cmd("swaync")
-              hl.exec_cmd("waypaper --restore")
               hl.exec_cmd("wl-paste --type text --watch cliphist store")
               hl.exec_cmd("wl-paste --type image --watch cliphist store")
             end

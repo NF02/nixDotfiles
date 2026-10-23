@@ -28,8 +28,8 @@
       "application/pdf" = [ "org.kde.okular.desktop" ];
 
       # Immagini
-      "image/jpeg" = [ "swayimg.desktop" ];
-      "image/png" = [ "swayimg.desktop" ];
+      "image/jpeg" = [ "imv.desktop" ];
+      "image/png" = [ "imv.desktop" ];
 
       # Directory (fondamentale per fare aprire le cartelle a PCManFM)
       "inode/directory" = [ "pcmanfm.desktop" ];
@@ -45,4 +45,7 @@
       "video/x-matroska" = [ "mpv.desktop" ];
     };
   };
+
+  # Viewer immagini predefinito
+  home.packages = [ pkgs.imv ];
 }
