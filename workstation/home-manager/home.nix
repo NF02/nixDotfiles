@@ -19,6 +19,7 @@
     ./moduli/hyprlock.nix
     ./moduli/hypridle.nix
     ./moduli/waybar.nix
+    ./moduli/hyprlauncher.nix
   ];
   programs.devicemenu.enable = true;
   programs.snipping.enable = true;

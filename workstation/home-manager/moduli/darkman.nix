@@ -27,6 +27,24 @@ let
       ${pkgs.systemd}/bin/systemctl --user restart waybar.service 2>/dev/null || ${pkgs.procps}/bin/pkill -SIGUSR2 waybar 2>/dev/null || true
     }
 
+    update_hyprtoolkit() {
+      local pref="$1"
+      mkdir -p "$HOME/.config/hypr"
+      if [ -L "$HOME/.config/hypr/hyprtoolkit.conf" ]; then
+        rm -f "$HOME/.config/hypr/hyprtoolkit.conf"
+      fi
+      if [ "$pref" = "1" ]; then
+        if [ -f "$HOME/.config/hypr/hyprtoolkit-dark.conf" ]; then
+          cp -f "$HOME/.config/hypr/hyprtoolkit-dark.conf" "$HOME/.config/hypr/hyprtoolkit.conf"
+        fi
+      else
+        if [ -f "$HOME/.config/hypr/hyprtoolkit-light.conf" ]; then
+          cp -f "$HOME/.config/hypr/hyprtoolkit-light.conf" "$HOME/.config/hypr/hyprtoolkit.conf"
+        fi
+      fi
+      chmod 644 "$HOME/.config/hypr/hyprtoolkit.conf" 2>/dev/null || true
+    }
+
     update_prefer_dark() {
       local pref="$1"
       local ini="$2"
@@ -35,7 +53,7 @@ let
         printf '[Settings]\n' > "$ini"
       fi
       if ${pkgs.gnugrep}/bin/grep -q "gtk-application-prefer-dark-theme" "$ini"; then
-        ${pkgs.gnused}/bin/sed -i "s/gtk-application-prefer-dark-theme.*/gtk-application-prefer-dark-theme='$pref/" "$ini"
+        ${pkgs.gnused}/bin/sed -i "s/gtk-application-prefer-dark-theme.*/gtk-application-prefer-dark-theme=$pref/" "$ini"
       else
         echo "" >> "$ini"
         echo "gtk-application-prefer-dark-theme='$pref'" >> "$ini"
@@ -105,6 +123,7 @@ let
         update_prefer_dark 1 "$HOME/.config/gtk-3.0/settings.ini"
         update_prefer_dark 1 "$HOME/.config/gtk-4.0/settings.ini"
         update_waybar 1
+        update_hyprtoolkit 1
         apply_wallpaper dark "/home/nick/Immagini/my-wallpapers/art"
         ;;
       light)
@@ -113,6 +132,7 @@ let
         update_prefer_dark 0 "$HOME/.config/gtk-3.0/settings.ini"
         update_prefer_dark 0 "$HOME/.config/gtk-4.0/settings.ini"
         update_waybar 0
+        update_hyprtoolkit 0
         apply_wallpaper light "/home/nick/Immagini/my-wallpapers/minimal"
         ;;
     esac

@@ -33,7 +33,7 @@
     gtk3.extraConfig = {
       gtk-application-prefer-dark-theme = 0;
     };
-    
+
     gtk4.extraConfig = {
       gtk-application-prefer-dark-theme = 0;
     };
@@ -44,10 +44,11 @@
   };
   xdg.configFile."gtk-3.0/settings.ini".force = true;
   xdg.configFile."gtk-4.0/settings.ini".force = true;
-  
+
   # Pacchetti di uso generale
   home.packages = with pkgs; [
     glib
+    dconf
     htop
     opencode
     curl
@@ -60,6 +61,8 @@
     typst
     hieroglyphic
     gcc
+    sigil
+    zip
     # musica
     guitarix
     ardour
@@ -67,6 +70,7 @@
     audacity
     lmms-full
     flowblade
+    sonic-visualiser
     R
     (pkgs.rWrapper.override {
       packages = with rPackages; [

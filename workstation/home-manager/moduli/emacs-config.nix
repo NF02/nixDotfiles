@@ -20,14 +20,12 @@ let
     eat
     neotree
     sly
-    processing-mode
     cobol-mode
 
     # --- Web (lisp/web.el) ---
     web-mode
     emmet-mode
     php-mode
-    hugoista
 
     # --- LaTeX e PDF (lisp/latex-conf.el) ---
     cdlatex
@@ -56,9 +54,6 @@ let
 
     # --- Typst (lisp/typst.el) ---
     typst-ts-mode
-
-    # --- Scribble/Racket (lisp/scribble.el) ---
-    racket-mode
   ];
 in
 {
@@ -72,6 +67,7 @@ in
     hunspellDicts.it-it      # Dizionario italiano per hunspell (consigliato)
     clang-tools              # Include clangd per Eglot (C/C++)
     texlab                   # Server LSP per LaTeX
+    tinymist                 # Server LSP per Typst
     phpactor                 # Server LSP per PHP
     lilypond                 # Compilatore per spartiti musicali
     pandoc                   # Per l'export avanzato in org-mode

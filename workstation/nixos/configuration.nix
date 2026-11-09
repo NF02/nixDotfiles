@@ -9,7 +9,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./package.nix
-      ./hyprland.nix
+      #./hyprland.nix
       ./pro-video-intel.nix
     ];
 

@@ -62,6 +62,7 @@ in
 
   home.packages = with pkgs; [
     hyprlauncher
+    hyprtoolkit
     playerctl
     cliphist
     wl-clipboard    # Font usati dalla barra (stessi di base.nix/ghostty/foot):
@@ -71,6 +72,7 @@ in
     font-awesome
     # Tool usati dal modulo custom-systemd-net (iwctl + networkctl):
     iwd
+    swaynotificationcenter
     systemd
   ];
 
@@ -456,18 +458,41 @@ in
           gaps_in = 0;
         }
       ];
-      on = {
+      on = [
+        {
+          _args = [
+            "hyprland.start"
+            (lib.generators.mkLuaInline ''
+              function()
+                hl.exec_cmd("swaync")
+                hl.exec_cmd("wl-paste --type text --watch cliphist store")
+                hl.exec_cmd("wl-paste --type image --watch cliphist store")
+              end
+            '')
+          ];
+        }
+      ]
+      # I workspace della barra sono moduli custom (il modulo nativo di Waybar
+      # non e' compatibile con i dispatcher Lua di Hyprland): invece del polling
+      # li aggiorniamo sugli eventi. SIGRTMIN+8 corrisponde a "signal": 8 in
+      # waybar.nix.
+      ++ map (event: {
         _args = [
-          "hyprland.start"
-          (lib.generators.mkLuaInline ''
-            function()
-              hl.exec_cmd("swaync")
-              hl.exec_cmd("wl-paste --type text --watch cliphist store")
-              hl.exec_cmd("wl-paste --type image --watch cliphist store")
-            end
-          '')
+          event
+          (lib.generators.mkLuaInline ''function() hl.exec_cmd("pkill -RTMIN+8 waybar") end'')
         ];
-      };
+      }) [
+        "workspace.active"
+        "workspace.created"
+        "workspace.removed"
+        "workspace.move_to_monitor"
+        "workspace.special_active"
+        "window.open"
+        "window.close"
+        "window.destroy"
+        "window.move_to_workspace"
+        "monitor.focused"
+      ];
     };
   };
 }
