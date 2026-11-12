@@ -15,11 +15,14 @@
     ./moduli/startw.nix
     ./moduli/hyprpolkit.nix
     ./moduli/darkman.nix
-    ./moduli/flameshot.nix
+    ./moduli/snipping.nix
     ./moduli/rofi.nix
 
     # Applicazioni
     ./moduli/emacs-config.nix
     ./moduli/sbcl.nix
   ];
+
+  # Screenshot tool basato su rofi + grim/slurp/swappy (sostituisce Flameshot).
+  programs.snipping.enable = true;
 }

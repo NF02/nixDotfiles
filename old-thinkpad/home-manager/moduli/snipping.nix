@@ -5,75 +5,95 @@ let
 
   snipping-script = pkgs.writeShellScriptBin "snipping" ''
     #!/usr/bin/env bash
+    set -u
 
-    # Options
-    opts="full screen\nselection screen\nselection area\nselection window"
-    snipping=$(echo -e $opts | ${cfg.rofi} -dmenu -p "Snipping tool")
-    if [[ $snipping == "" ]]; then
-        exit 0
-    fi
-    PICTURE_DIR="${cfg.pictureDir}"
-    temp="/tmp"
-    fileName=$(echo "$temp/$(date +'%s_grim.png')")
+    rofi=${cfg.rofi}
+    grim=${cfg.grim}
+    slurp=${cfg.slurp}
+    swappy=${cfg.swappy}
+    wl_copy=${cfg.wlCopy}
+    swaymsg=${cfg.swaymsg}
+    jq=${cfg.jq}
+    notify_send=${cfg.notifySend}
 
-    if [ ! -d "$PICTURE_DIR/screenshot" ];then
-        mkdir -p $PICTURE_DIR/screenshot/
-    fi
+    picture_dir="${cfg.pictureDir}"
+    screenshot_dir="$picture_dir/screenshot"
+    mkdir -p "$screenshot_dir"
 
-    # function
-    opts_mod(){
-        mods="Edit screenshot\nSave\nCopy clipboard\n"
-        mods_la=$(echo -e $mods | ${cfg.rofi} -dmenu -p "Options:")
-        if [[ $mods_la == "" ]]; then
-            exit 0
-        fi
-
-        case $mods_la in
-            "Edit screenshot") ${cfg.swappy} -f $1;;
-            "Save") cp $1 $PICTURE_DIR/screenshot/;;
-            "Copy clipboard") ${cfg.wlCopy} < $1;;
-        esac
-        ${cfg.notifySend} "Finish!"
+    # slurp usa i "rettangoli predefiniti" se stdin non è un TTY.
+    # Per area/schermo ci serve la selezione interattiva: se lo script
+    # viene lanciato da Sway senza TTY, gliene diamo uno.
+    slurp_interactive() {
+      if [ -t 0 ]; then
+        "$slurp" "$@"
+      elif (exec </dev/tty) 2>/dev/null; then
+        "$slurp" "$@" </dev/tty
+      else
+        "$slurp" "$@" </dev/null
+      fi
     }
 
-    full_screen(){
-        actualFile=$fileName
-        ${cfg.grim} $actualFile
-        opts_mod "$actualFile"
-    }
+    choice=$(printf '%s\n' \
+      'full screen' \
+      'selection screen' \
+      'selection area' \
+      'selection window' \
+      | "$rofi" -dmenu -p "Snipping tool")
+    [ -n "$choice" ] || exit 0
 
-    selection_screen(){
-        actualFile=$fileName
-        ${cfg.grim} -o $(${cfg.slurp} -f %o -or) $actualFile
-        opts_mod "$actualFile"
-    }
+    tmp_file=$(mktemp "''${TMPDIR:-/tmp}/snipping-XXXXXX")
 
-    selection_area(){
-        actualFile=$fileName
-        ${cfg.grim} -g "$(${cfg.slurp})" $actualFile
-        opts_mod "$actualFile"
-    }
-
-    ## window selection
-    function select_window() {
-        local clients=`${cfg.swaymsg} -t get_tree | ${cfg.jq} -r '[.. | ((.nodes? // empty) + (.floating_nodes? // empty))[] | select(.visible and .pid)]'`
-        local boxes="$(echo $clients | ${cfg.jq} -r '.[] | "\(.rect.x),\(.rect.y) \(.rect.width)x\(.rect.height) \(.name)"')"
-        ${cfg.slurp} -r <<< "$boxes"
-    }
-
-    selection_active_window(){
-        actualFile=$fileName
-        ${cfg.grim} -g "$(select_window)" $actualFile
-        opts_mod "$actualFile"
-    }
-
-    # main program
-    case $snipping in
-        "full screen") full_screen;;
-        "selection screen") selection_screen;;
-        "selection area") selection_area;;
-        "selection window") selection_active_window;;
+    case "$choice" in
+      "full screen")
+        "$grim" "$tmp_file" || exit 1
+        ;;
+      "selection screen")
+        output=$(slurp_interactive -o -f '%o') || exit 1
+        [ -n "$output" ] || exit 1
+        "$grim" -o "$output" "$tmp_file" || exit 1
+        ;;
+      "selection area")
+        geometry=$(slurp_interactive) || exit 1
+        [ -n "$geometry" ] || exit 1
+        "$grim" -g "$geometry" "$tmp_file" || exit 1
+        ;;
+      "selection window")
+        geometry=$(
+          "$swaymsg" -t get_tree \
+            | "$jq" -r '
+                [.. | objects
+                 | select(.pid? != null and .visible == true)
+                 | "\(.rect.x),\(.rect.y) \(.rect.width)x\(.rect.height) \(.name // "window")"]
+                | .[]
+              ' \
+            | "$slurp" -r
+        ) || exit 1
+        [ -n "$geometry" ] || exit 1
+        "$grim" -g "$geometry" "$tmp_file" || exit 1
+        ;;
     esac
+
+    [ -s "$tmp_file" ] || exit 1
+
+    action=$(printf '%s\n' 'Edit screenshot' 'Save' 'Copy clipboard' \
+      | "$rofi" -dmenu -p "Options:")
+    [ -n "$action" ] || exit 0
+
+    case "$action" in
+      "Edit screenshot")
+        "$swappy" -f "$tmp_file"
+        ;;
+      "Save")
+        cp "$tmp_file" "$screenshot_dir/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png"
+        rm -f "$tmp_file"
+        ;;
+      "Copy clipboard")
+        "$wl_copy" < "$tmp_file"
+        rm -f "$tmp_file"
+        ;;
+    esac
+
+    "$notify_send" "Snipping" "$action"
   '';
 in
 {
@@ -130,7 +150,7 @@ in
 
     pictureDir = lib.mkOption {
       type = lib.types.str;
-      default = "$HOME/Immagini";
+      default = "${config.home.homeDirectory}/Immagini";
       description = "Base directory where screenshots are saved";
     };
   };
